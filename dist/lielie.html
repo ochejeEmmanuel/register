@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+  <style>
+    .error { color: red; font-size: 14px; }
+    .success { color: green; font-size: 14px; }
+    #userData { margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px; }
+  </style>
+</head>
+<body>
+  <h2>REGISTER</h2>
+
+  <form id="registerForm">
+    <input type="text" id="fullname" placeholder="Full Name" required><br><br>
+
+    <input type="email" id="email" placeholder="Email" required>
+    <div id="emailFeedback"></div><br>
+
+    <input type="tel" id="phone" placeholder="Phone Number" required><br><br>
+
+    <input type="password" id="password" placeholder="Password" required><br><br>
+
+    <input type="date" id="dob" required><br><br>
+
+    <button type="submit">Register</button>
+  </form>
+
+  <div id="userData"></div>
+
+  <script>
+    const emailInput = document.getElementById('email');
+    const emailFeedback = document.getElementById('emailFeedback');
+
+    emailInput.addEventListener('input', function () {
+      const email = emailInput.value.trim();
+      const emailRegex = /^[^\\s]+[^\\s]+\\.[^\\s]+$/;
+      if (emailRegex.test(email)) {
+        emailFeedback.textContent = "Valid email.";
+        emailFeedback.className = "success";
+      } else {
+        emailFeedback.textContent = "Invalid email address.";
+        emailFeedback.className = "error";
+      }
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const fullname = document.getElementById('fullname').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value;
+      const dob = document.getElementById('dob').value;
+
+      const emailRegex = /^[^\\s]+[^\\s]+\\.[^\\s]+$/;
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$/;
+
+      // Reset feedback
+      emailFeedback.className = "";
+
+      // Validate inputs
+      if (!fullname || !email || !phone || !password || !dob) {
+        emailFeedback.textContent = "All fields are required.";
+        emailFeedback.className = "error";
+        return;
+      }
+
+      if (!emailRegex.test(email)) {
+        emailFeedback.textContent = "Invalid email address.";
+        emailFeedback.className = "error";
+        return;
+      }
+
+      if (!passwordRegex.test(password)) {
+        emailFeedback.textContent = "Password must be at least 8 characters, include uppercase, lowercase, and a number.";
+        emailFeedback.className = "error";
+        return;
+      }
+
+      // Check age
+      const today = new Date();
+      const birthDate = new Date(dob);
+      const age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      const d = today.getDate() - birthDate.getDate();
+      const isOver18 = age > 18 || (age === 18 && (m > 0 || (m === 0 && d >= 0)));
+
+      if (!isOver18) {
+        emailFeedback.textContent = "You must be over 18 years old.";
+        emailFeedback.className = "error";
+        return;
+      }
+
+      // Show user data
+      const userDataDiv = document.getElementById('userData');
+      userDataDiv.innerHTML = `
+        <h3>Registration Successful!</h3>
+        <p><strong>Full Name:</strong> ${fullname}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Phone:</strong> ${phone}</p>
+        <p><strong>Date of Birth:</strong> ${dob}</p>
+      `;
+    });
+  </script>
+</body>
+</html>
